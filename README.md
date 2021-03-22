@@ -1,5 +1,9 @@
-### 更新说明
+### 更新说明  更具这个哥们改编的  https://github.com/aa0604/payment 
+2021-3-22 
+   整合了字节跳动只能微信 或者支付宝单个支付的功能。
+   把具体操作微信小程序 字节头条的支付 操作 展示出来了。
 
+### 更新说明 
 app签名的键名改变了三个，之前是全小写，现改为驼峰（nonceStr，timeStamp，appId）
 
 # 概要
@@ -91,7 +95,7 @@ app签名的键名改变了三个，之前是全小写，现改为驼峰（nonce
 
 
 ## 安装
-composer require Li Jie/payment dev-master
+composer require code-lives/pay
 
 # 业务代码示例
 ### 签名/参数获取示例代码
