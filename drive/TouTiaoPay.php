@@ -172,35 +172,24 @@ class TouTiaoPay implements \Pays\payment\core\PayInterface
 
         // 设置第三方支付url参数
         if (!empty($this->serviceType)) {
-            $aliconfig = config('pay.AliPay');
-            $wxconfig = config('pay.WeChatPay');
-            $service1 = \Pays\payment\drive\PayFactory::getInstance('AliPay')
-                ->init($aliconfig)
-                ->set($this->orderSn, $this->centsToYuan($this->amount), $this->title, $this->body);
-            $service = \Pays\payment\drive\PayFactory::getInstance('WeChatPay')
-                ->init($wxconfig)
-                ->set($this->orderSn, $this->centsToYuan($this->amount), $this->title, $this->body);
-            $aliparams = $service1->getAppParam();
-            $post['alipay_url'] = $aliparams;
 
-            $post['wx_type'] = 'MWEB';
-            $service->payObject->SetTrade_type($post['wx_type']);
-            $result = $service->getH5Param();
-            $wxparams = json_decode($result, 1);
-            $post['wx_url'] = $wxparams['mweb_url'] ?? '';
-            // switch ($this->serviceType) {
-            //     case 'AliPay';
-            //         $params = $service->getAppParam();
-            //         $post['alipay_url'] = $params;
-            //         break;
-            //     case 'WeChatPay':
-            //         $post['wx_type'] = 'MWEB';
-            //         $service->payObject->SetTrade_type($post['wx_type']);
-            //         $result = $service->getH5Param();
-            //         $params = json_decode($result, 1);
-            //         $post['wx_url'] = $params['mweb_url'] ?? '';
-            //         break;
-            // }
+            $service = \Pays\payment\drive\PayFactory::getInstance($this->serviceType)
+                ->init($this->otherSet)
+                ->set($this->orderSn, $this->centsToYuan($this->amount), $this->title, $this->body);
+
+            switch ($this->serviceType) {
+                case 'AliPay';
+                    $params = $service->getAppParam();
+                    $post['alipay_url'] = $params;
+                    break;
+                case 'WeChatPay':
+                    $post['wx_type'] = 'MWEB';
+                    $service->payObject->SetTrade_type($post['wx_type']);
+                    $result = $service->getH5Param();
+                    $params = json_decode($result, 1);
+                    $post['wx_url'] = $params['mweb_url'] ?? '';
+                    break;
+            }
         }
         $post['sign'] = $this->sign($post);
         return $post;
