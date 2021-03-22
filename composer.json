@@ -1,6 +1,6 @@
 {
     "name": "code-lives/pay",
-    "description": "支持支付宝支付、微信支付、小程序支付、IOS苹果内购、payPal支付、银联、首信易，payssion支付，可生成支付宝、微信app、小程序签名,头条/字节跳动",
+    "description": "头条小程序支付（微信h5和支付宝） 微信小程序支付",
     "license": "MIT",
     "type":"library",
     "authors": [
