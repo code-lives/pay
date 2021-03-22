@@ -277,12 +277,19 @@ $aliConfig = [
      'rsaPrivateKey' => '支付宝私钥（字符串），详情请查看支付宝生成私钥的文档',
  ];
 ```
-### 支付宝获取异步通知参数
+### 支付宝小程序获取异步通知操作
 ```php
 <?php
 $params = $_POST['passback_params']; // 自定义参数
 $orderSn = $_POST['out_trade_no']; // 订单号
 $payMoney = $_POST['total_amount']; // 支付金额
+$status = \Pays\payment\drive\PayFactory::getInstance('AliPay')->init(config)->validate($_POST);
+if ($status) {
+   $orderSn = $_POST['out_trade_no']; // 订单号
+   exit('success');
+} else {
+   exit('error');
+}
 ```
 
 ## 微信/小程序
@@ -300,20 +307,34 @@ $wechatConfig = [
     // 请换成你自己的相应的文证书件地址
     'SSL_CERT_PATH' =>  '(绝对路径)apiclient_cert.pem',
     'SSL_KEY_PATH' => '(绝对路径)apiclient_key.pem',
+    
 ];
 
 ```
+### 微信小程序 获取支付参数操作
+```php
+$config['openId'] = $openid;
+$payInstance = \xing\payment\drive\PayFactory::getInstance('WeChatPay')->init($config);
+$sign = $payInstance->set($order_no, $money, $title)->getMiniProgramParam();
+$data = json_decode($sign, true);
+        
+```
 
-### 微信获取异步通知参数
+### 微信h5和小程序的异步通知操作
 ```php
 <?php
 
 # 获取微信异步通知传来的参数
-$post = $payInstance->getNotifyParams();
-# 这是自定义参数
-$drive = $post['attach'] ?? ''; 
-# 订单号
-$orderSn = $post['out_trade_no'];
+  $payInstance = \Pays\payment\drive\PayFactory::getInstance('WeChatPay')->init(config);
+  $post = $payInstance->getNotifyParams();
+  $status = $payInstance->validate($post);
+  if ($status) {
+      //支付成功 开始写逻辑
+      $orderSn = $post['out_trade_no']; //这是订单号
+  } else {
+      echo "error";
+      exit;
+  }
 ```
 
 ### 微信分转换为元
@@ -332,6 +353,18 @@ $config = [
             'secret' => '密钥',
 ];
 ```
+## 字节跳动获取支付参数操作
+```php
+$aliconfig   //支付宝配置参数
+$WeChatPay   //微信h5配置参数;
+$setconfig   //头条配置参数;
+$setconfig['openId'] = $openid;
+$payInstance = \Pays\payment\drive\PayFactory::getInstance('tuoTiao')->init($setconfig)->setServices($aliconfig, $WeChatPay);
+$sign = $payInstance->set($order_no, $money, $title, $title)->getAppParams();
+
+完事
+```
+
 ## paypal
 ### payPal配置
 ```php
